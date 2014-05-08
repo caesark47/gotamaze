@@ -60,6 +60,7 @@ namespace AATree {
 		}
 
 		public IAATree<T> insert(T arg) {
+			if(this.has(arg)) { return this; }//データの重複を許さない
 			if (val.CompareTo(arg) > 0) {
 				l = l.insert(arg);
 			} else {
@@ -90,6 +91,50 @@ namespace AATree {
 			if (arg.CompareTo(val) > 0) { return r.has(arg); }
 			if (arg.CompareTo(val) == 0) { return true; }
 			return false;
+		}
+
+		public T min() {
+			if (l.isSentinel()) { return val; }
+			return l.min();
+		}
+
+		public T max() {
+			if (r.isSentinel()) { return val; }
+			return r.max();
+		}
+
+		public IAATree<T> delete(T arg) {
+			if (!this.has(arg)) { return this; }
+			IAATree<T> ret = this;
+			if (arg.CompareTo(val) < 0) { l = l.delete(arg); }
+			if (arg.CompareTo(val) > 0) { r = r.delete(arg); }
+			if (arg.CompareTo(val) == 0) {
+				//子が両方sentinelなら（＝葉）自分をsentinelに置き換え
+				//sentinelなのでレベル操作などは不要でreturn
+				if (l.isSentinel() && r.isSentinel()) { return new Sentinel<T>(); }
+				//子が片方しか居なければその子をかわりに接続
+				if (l.isSentinel()) { ret = r; }
+				if (r.isSentinel()) { ret = l; }
+				
+				//子が両方いるなら右をたどって一番左を連れてくる
+				var tmp = r;
+				if (tmp.l.isSentinel()) {
+					//自分の右の子に左の子が居なければ付け替えて終了
+					tmp.l = this.l;
+					ret = tmp;
+				} else {
+					//sentinelに出くわすまで左向きにたどる
+					while (!tmp.l.l.isSentinel()) { tmp = tmp.l; }
+					//tmp.lを切り離してthisの位置に持ってくる
+					ret = tmp.l;
+					tmp.l = tmp.l.r;
+					ret.l = this.l;
+					ret.r = this.r;
+					ret.level = level;
+				}
+				//！ここで再平衡化が必要！
+				return ret;
+			}
 		}
 	}
 }

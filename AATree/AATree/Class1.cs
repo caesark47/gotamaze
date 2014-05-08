@@ -10,8 +10,10 @@ namespace AATree {
 		IAATree<T> split();
 		IAATree<T> pull();
 		T val { get; }
+		T min();
+		T max();
 		IAATree<T> insert(T arg);
-		//IAATree<T> delete();
+		IAATree<T> delete(T arg);
 		int level { get; set; }
 		IAATree<T> l { get; set; }
 		IAATree<T> r { get; set; }
@@ -46,11 +48,14 @@ namespace AATree {
 		public IAATree<T> insert(T arg) {
 			return new Node<T>(arg);
 		}
+		public IAATree<T> delete(T arg) { return this; }
 		public string disp(string arg) { return string.Empty; }
 		public bool has(T arg) { return false; }
 		//一応作ったがsentinelのval呼び出しは好ましくないのでisSentinel()で事前に調べて避けるべき
 		//今のところどこでも使ってないはず
 		public T val { get { return default(T); } }
+		public T min() { return default(T); }
+		public T max() { return default(T); }
 	}
 
 
