@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 
 namespace AATree {
-    public interface IAATree<T> {
+    public interface IAATree<T> 
+    where T : IComparable {
         IAATree<T> skew();
 		IAATree<T> split();
 		IAATree<T> pull();
+        T val { get; }
 		IAATree<T> insert(T arg);
-		//void delete();
+        //IAATree<T> delete();
 		int level { get; set; }
 		IAATree<T> l { get; set; }
 		IAATree<T> r { get; set; }
 		bool isSentinel();
+        bool has(T arg);
         string disp(string arg);
 	}
 
@@ -44,12 +47,17 @@ namespace AATree {
             return new Node<T>(arg);
         }
         public string disp(string arg) { return string.Empty; }
+        public bool has(T arg) { return false; }
+        //一応作ったがsentinelのval呼び出しは好ましくないのでisSentinel()で事前に調べて避けるべき
+        //今のところどこでも使ってないはず
+        public T val { get { return default(T); } }
     }
 
-
+    /// <summary>葉、枝</summary>
+    /// <typeparam name="T"></typeparam>
     public class Node<T> : IAATree<T>
     where T : IComparable {
-        public T val { get; set; }
+        public T val { get; private set; }
         public int level { get; set; }
 		public IAATree<T> l { get; set; }
 		public IAATree<T> r { get; set; }
@@ -71,6 +79,7 @@ namespace AATree {
 			}
 			return this;
 		}
+
 		public IAATree<T> skew() {
             if (l.level == level) {
                 var L = l;
@@ -80,6 +89,7 @@ namespace AATree {
             }
             return this;
 		}
+
         public IAATree<T> split() {
             if (level == r.r.level) {
                 var R = r;
@@ -90,11 +100,7 @@ namespace AATree {
             }
             return this;
         }
-        //public AATree() {//クラス外部から値を与えずに作ることはない
-        //    level = 1;
-        //    l = new sentinel<T>();
-        //    r = new sentinel<T>();
-        //}
+
         public Node(T arg) {
             level = 1;
             l = new Sentinel<T>();
@@ -108,12 +114,9 @@ namespace AATree {
             } else {
                 r = r.insert(arg);
             }
-            var ret = this.pull();
-            ret = ret.skew();
-            ret = ret.split();
-
-            return ret;
+            return this.pull().skew().split();
         }
+
         public string disp(string arg) {
             var ret = string.Empty;
             if (arg == "t") {//ツリー？表示
@@ -131,6 +134,12 @@ namespace AATree {
             return ret;
         }
 
+        public bool has(T arg){
+            if (arg.CompareTo(val) < 0) { return l.has(arg); }
+            if (arg.CompareTo(val) > 0) { return r.has(arg); }
+            if (arg.CompareTo(val) == 0) { return true; }
+            return false;
+        }
     }
 }
 	
