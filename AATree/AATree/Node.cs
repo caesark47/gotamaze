@@ -132,9 +132,20 @@ namespace AATree {
 					ret.r = this.r;
 					ret.level = level;
 				}
-				//！ここで再平衡化が必要！
-				return ret;
 			}
+			return ret.levelDown();
+		}
+
+		/// <summary>レベルを下げて再平衡化　まだガワだけ</summary>
+		/// <returns></returns>
+		public IAATree<T> levelDown() {
+			IAATree<T> ret = this;
+			//葉のレベルは1
+			if (l.isSentinel() && r.isSentinel()) { level = 1; }
+			//子と離れすぎていたら下げる
+
+			return ret;
+			
 		}
 	}
 }

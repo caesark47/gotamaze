@@ -9,6 +9,7 @@ namespace AATree {
 		IAATree<T> skew();
 		IAATree<T> split();
 		IAATree<T> pull();
+		IAATree<T> levelDown();
 		T val { get; }
 		T min();
 		T max();
@@ -45,6 +46,7 @@ namespace AATree {
 		public IAATree<T> pull() { return this; }
 		public IAATree<T> skew() { return this; }
 		public IAATree<T> split() { return this; }
+		public IAATree<T> levelDown() { return this; }
 		public IAATree<T> insert(T arg) {
 			return new Node<T>(arg);
 		}
